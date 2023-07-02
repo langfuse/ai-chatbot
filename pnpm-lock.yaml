@@ -54,8 +54,11 @@ dependencies:
     specifier: ^10.1.1
     version: 10.1.1(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0)
   langfuse:
-    specifier: ^0.0.5
-    version: 0.0.5
+    specifier: ^0.0.6
+    version: 0.0.6
+  lucide-react:
+    specifier: ^0.258.0
+    version: 0.258.0(react@18.2.0)
   nanoid:
     specifier: ^4.0.2
     version: 4.0.2
@@ -3061,8 +3064,8 @@ packages:
     engines: {node: '>=6'}
     dev: false
 
-  /langfuse@0.0.5:
-    resolution: {integrity: sha512-F8fwiyLP0QPcA4JVRQ4VL8csYoXu2BJWJHeu/r4cAUd2Dsx2OY3Plq6/VQH89hhh5SCQfSksAuPxm9MULrck2w==}
+  /langfuse@0.0.6:
+    resolution: {integrity: sha512-8EQ81gs4iclal/8K/o3nCz5dXaPZLwVlUgUGjjMZGNC1wkqKGrAvt8yat4XAI5F4repK+uD19YLWJ1lGY0kqkA==}
     dependencies:
       openapi-fetch: 0.6.0
     dev: false
@@ -3143,6 +3146,14 @@ packages:
     dependencies:
       yallist: 4.0.0
     dev: true
+
+  /lucide-react@0.258.0(react@18.2.0):
+    resolution: {integrity: sha512-3evnpKadBrjLr2HHJ66eDZ1y0vPS6pm8NiNDaLqhddUUyJGnA+lfDPZfbVkuAFq7Xaa1TEy7Sg17sM7mHpMKrA==}
+    peerDependencies:
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+    dev: false
 
   /magic-string@0.30.0:
     resolution: {integrity: sha512-LA+31JYDJLs82r2ScLrlz1GjSgu66ZV518eyWT+S8VhyQn/JL0u9MeBOvQMGYiPk1DBiSN9DDMOcXvigJZaViQ==}
