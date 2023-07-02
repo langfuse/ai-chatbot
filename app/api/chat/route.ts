@@ -4,6 +4,7 @@ import { Configuration, OpenAIApi } from 'openai-edge'
 
 import { auth } from '@/auth'
 import { nanoid } from '@/lib/utils'
+import Langfuse from 'langfuse'
 
 export const runtime = 'edge'
 
@@ -13,10 +14,15 @@ const configuration = new Configuration({
 
 const openai = new OpenAIApi(configuration)
 
+const langfuse = new Langfuse({
+  secretKey: process.env.LANGFUSE_SECRET_KEY ?? '',
+  publicKey: process.env.NEXT_PUBLIC_LANGFUSE_PUBLIC_KEY ?? ''
+})
+
 export async function POST(req: Request) {
   const json = await req.json()
   const { messages, previewToken } = json
-  const userId = (await auth())?.user.id
+  const { id: userId, email: userEmail } = (await auth())?.user
 
   if (!userId) {
     return new Response('Unauthorized', {
@@ -34,6 +40,8 @@ export async function POST(req: Request) {
     temperature: 0.7,
     stream: true
   })
+
+  const startTime = new Date().toISOString()
 
   const stream = OpenAIStream(res, {
     async onCompletion(completion) {
@@ -60,6 +68,28 @@ export async function POST(req: Request) {
         score: createdAt,
         member: `chat:${id}`
       })
+      langfuse.logGeneration({
+        traceId: `chat:${id}`,
+        traceIdType: 'EXTERNAL',
+        name: 'chat',
+        startTime,
+        endTime: new Date().toISOString(),
+        prompt: messages,
+        completion,
+        metadata: {
+          user: userId,
+          userEmail
+        },
+        model: 'gpt-3.5-turbo',
+        modelParameters: {
+          temperature: 0.7
+        }
+      })
+      try {
+        await langfuse.flush()
+      } catch (e) {
+        console.error(JSON.stringify(e))
+      }
     }
   })
 
