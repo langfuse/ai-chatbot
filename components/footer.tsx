@@ -17,7 +17,8 @@ export function FooterText({ className, ...props }: React.ComponentProps<'p'>) {
       <ExternalLink href="https://vercel.com/storage/kv">
         Vercel KV
       </ExternalLink>
-      .
+      , and traced with{' '}
+      <ExternalLink href="https://langfuse.com">langfuse</ExternalLink>.
     </p>
   )
 }

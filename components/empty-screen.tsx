@@ -32,8 +32,10 @@ export function EmptyScreen({ setInput }: Pick<UseChatHelpers, 'setInput'>) {
           <ExternalLink href="https://vercel.com/storage/kv">
             Vercel KV
           </ExternalLink>
-          .
+          . All interactions with the chatbot are traced with{' '}
+          <ExternalLink href="https://langfuse.com">langfuse</ExternalLink>.
         </p>
+        <p className="mb-2 leading-normal text-muted-foreground"></p>
         <p className="leading-normal text-muted-foreground">
           You can start a conversation here or try the following examples:
         </p>
