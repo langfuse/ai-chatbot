@@ -34,16 +34,19 @@ export function ChatMessageActions({
     copyToClipboard(message.content)
   }
 
-  const handleFeedback = async (score: number) => {
+  const handleFeedback = (score: number) => {
     if (isVoting || !chatId) return
     setIsVoting(true)
-    await langfuse.createScore({
-      traceId: `chat:${chatId}`,
-      traceIdType: 'EXTERNAL',
-      name: 'user-feedback',
-      value: score
-    })
-    setIsVoting(false)
+    langfuse
+      .createScore({
+        traceId: `chat:${chatId}`,
+        traceIdType: 'EXTERNAL',
+        name: 'user-feedback',
+        value: score
+      })
+      .then(res => {
+        setIsVoting(false)
+      })
   }
 
   return (

@@ -141,21 +141,29 @@ export function SidebarActions({
             <Button
               disabled={isSharePending}
               onClick={() => {
-                startShareTransition(async () => {
+                startShareTransition(() => {
                   if (chat.sharePath) {
-                    await new Promise(resolve => setTimeout(resolve, 500))
-                    copyShareLink(chat)
+                    new Promise(resolve => setTimeout(resolve, 500)).then(
+                      () => {
+                        copyShareLink(chat)
+                      }
+                    )
                     return
                   }
 
-                  const result = await shareChat(chat)
+                  shareChat(chat)
+                    .then(result => {
+                      if (result && 'error' in result) {
+                        toast.error(result.error)
+                        return
+                      }
 
-                  if (result && 'error' in result) {
-                    toast.error(result.error)
-                    return
-                  }
-
-                  copyShareLink(result)
+                      copyShareLink(result)
+                    })
+                    .catch(err => {
+                      console.error(err)
+                      toast.error('Something went wrong')
+                    })
                 })
               }}
             >
@@ -188,21 +196,26 @@ export function SidebarActions({
               disabled={isRemovePending}
               onClick={event => {
                 event.preventDefault()
-                startRemoveTransition(async () => {
-                  const result = await removeChat({
+                startRemoveTransition(() => {
+                  removeChat({
                     id: chat.id,
                     path: chat.path
                   })
+                    .then(res => {
+                      if (res && 'error' in res) {
+                        toast.error(res.error)
+                        return
+                      }
 
-                  if (result && 'error' in result) {
-                    toast.error(result.error)
-                    return
-                  }
-
-                  setDeleteDialogOpen(false)
-                  router.refresh()
-                  router.push('/')
-                  toast.success('Chat deleted')
+                      setDeleteDialogOpen(false)
+                      router.refresh()
+                      router.push('/')
+                      toast.success('Chat deleted')
+                    })
+                    .catch(err => {
+                      console.error(err)
+                      toast.error('Something went wrong')
+                    })
                 })
               }}
             >
