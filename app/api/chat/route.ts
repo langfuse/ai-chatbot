@@ -63,12 +63,7 @@ export async function POST(req: Request) {
           }
         ]
       }
-      await kv.hmset(`chat:${id}`, payload)
-      await kv.zadd(`user:chat:${userId}`, {
-        score: createdAt,
-        member: `chat:${id}`
-      })
-      langfuse.logGeneration({
+      const lfGeneration = langfuse.logGeneration({
         traceId: `chat:${id}`,
         traceIdType: 'EXTERNAL',
         name: 'chat',
@@ -83,8 +78,49 @@ export async function POST(req: Request) {
         model: 'gpt-3.5-turbo',
         modelParameters: {
           temperature: 0.7
+        },
+        usage: {
+          promptTokens: JSON.stringify(messages).length,
+          completionTokens: completion.length
         }
       })
+      await kv.hmset(`chat:${id}`, payload)
+      const event1 = langfuse.createEvent(
+        {
+          traceId: `chat:${id}`,
+          traceIdType: 'EXTERNAL',
+          startTime: new Date().toISOString(),
+          name: 'kv-hmset',
+          level: 'DEBUG',
+          input: {
+            key: `chat:${id}`,
+            ...payload
+          }
+        },
+        undefined,
+        lfGeneration
+      )
+      await kv.zadd(`user:chat:${userId}`, {
+        score: createdAt,
+        member: `chat:${id}`
+      })
+      const event2 = langfuse.createEvent(
+        {
+          traceId: `chat:${id}`,
+          traceIdType: 'EXTERNAL',
+          startTime: new Date().toISOString(),
+          name: 'kv-zadd',
+          level: 'DEBUG',
+          input: {
+            key: `user:chat:${userId}`,
+            score: createdAt,
+            member: `chat:${id}`
+          }
+        },
+        undefined,
+        lfGeneration
+      )
+
       try {
         await langfuse.flush()
       } catch (e) {
