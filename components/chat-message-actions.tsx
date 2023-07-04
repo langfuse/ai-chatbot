@@ -48,7 +48,7 @@ export function ChatMessageActions({
     if (isVoting || !chatId) return
     setIsVoting(true)
     langfuse
-      .createScore({
+      .score({
         traceId: `chat:${chatId}`,
         traceIdType: 'EXTERNAL',
         name: 'user-feedback',

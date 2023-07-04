@@ -4,7 +4,7 @@ import { Configuration, OpenAIApi } from 'openai-edge'
 
 import { auth } from '@/auth'
 import { nanoid } from '@/lib/utils'
-import Langfuse from 'langfuse'
+import { Langfuse } from 'langfuse'
 
 export const runtime = 'edge'
 
@@ -63,18 +63,20 @@ export async function POST(req: Request) {
           }
         ]
       }
-      const lfGeneration = langfuse.logGeneration({
-        traceId: `chat:${id}`,
-        traceIdType: 'EXTERNAL',
+      const trace = langfuse.trace({
+        name: 'chat',
+        externalId: `chat:${id}`,
+        metadata: {
+          user: userId,
+          userEmail
+        }
+      })
+      const lfGeneration = trace.generation({
         name: 'chat',
         startTime,
         endTime: new Date(),
         prompt: messages,
         completion,
-        metadata: {
-          user: userId,
-          userEmail
-        },
         model: 'gpt-3.5-turbo',
         modelParameters: {
           temperature: 0.7
@@ -85,41 +87,30 @@ export async function POST(req: Request) {
         }
       })
       await kv.hmset(`chat:${id}`, payload)
-      const event1 = langfuse.createEvent(
-        {
-          traceId: `chat:${id}`,
-          traceIdType: 'EXTERNAL',
-          startTime: new Date(),
-          name: 'kv-hmset',
-          level: 'DEBUG',
-          input: {
-            key: `chat:${id}`,
-            ...payload
-          }
-        },
-        undefined,
-        lfGeneration
-      )
+      lfGeneration.event({
+        startTime: new Date(),
+        name: 'kv-hmset',
+        level: 'DEBUG',
+        input: {
+          key: `chat:${id}`,
+          ...payload
+        }
+      })
+
       await kv.zadd(`user:chat:${userId}`, {
         score: createdAt,
         member: `chat:${id}`
       })
-      const event2 = langfuse.createEvent(
-        {
-          traceId: `chat:${id}`,
-          traceIdType: 'EXTERNAL',
-          startTime: new Date(),
-          name: 'kv-zadd',
-          level: 'DEBUG',
-          input: {
-            key: `user:chat:${userId}`,
-            score: createdAt,
-            member: `chat:${id}`
-          }
-        },
-        undefined,
-        lfGeneration
-      )
+      lfGeneration.event({
+        startTime: new Date(),
+        name: 'kv-zadd',
+        level: 'DEBUG',
+        input: {
+          key: `user:chat:${userId}`,
+          score: createdAt,
+          member: `chat:${id}`
+        }
+      })
 
       try {
         await langfuse.flush()
