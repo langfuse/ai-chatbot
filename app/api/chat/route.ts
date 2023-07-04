@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     stream: true
   })
 
-  const startTime = new Date().toISOString()
+  const startTime = new Date()
 
   const stream = OpenAIStream(res, {
     async onCompletion(completion) {
@@ -68,7 +68,7 @@ export async function POST(req: Request) {
         traceIdType: 'EXTERNAL',
         name: 'chat',
         startTime,
-        endTime: new Date().toISOString(),
+        endTime: new Date(),
         prompt: messages,
         completion,
         metadata: {
@@ -89,7 +89,7 @@ export async function POST(req: Request) {
         {
           traceId: `chat:${id}`,
           traceIdType: 'EXTERNAL',
-          startTime: new Date().toISOString(),
+          startTime: new Date(),
           name: 'kv-hmset',
           level: 'DEBUG',
           input: {
@@ -108,7 +108,7 @@ export async function POST(req: Request) {
         {
           traceId: `chat:${id}`,
           traceIdType: 'EXTERNAL',
-          startTime: new Date().toISOString(),
+          startTime: new Date(),
           name: 'kv-zadd',
           level: 'DEBUG',
           input: {
