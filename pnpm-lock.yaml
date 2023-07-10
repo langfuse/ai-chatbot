@@ -54,8 +54,8 @@ dependencies:
     specifier: ^10.1.1
     version: 10.1.1(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0)
   langfuse:
-    specifier: ^0.0.15
-    version: 0.0.15
+    specifier: ^0.0.18
+    version: 0.0.18
   lucide-react:
     specifier: ^0.258.0
     version: 0.258.0(react@18.2.0)
@@ -3067,8 +3067,8 @@ packages:
     engines: {node: '>=6'}
     dev: false
 
-  /langfuse@0.0.15:
-    resolution: {integrity: sha512-EA/7F+mUC0HhtejaV76KMEawQKZA3yLUoejxhzslhK8iGHpd/jZ9RFLXPyzpnSpNS7ZYntbo/WjaRui0e8MJdA==}
+  /langfuse@0.0.18:
+    resolution: {integrity: sha512-p3XExRKsicF1CwiC9RCxMjv5zHMIf3lxRWiJFf1AVdrIGXXNbmFlJ0wiVHSeO0eKsUzSTK8HLmRVSIeDdt9RtQ==}
     dependencies:
       openapi-fetch: 0.6.0
     dev: false
