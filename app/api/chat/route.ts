@@ -71,9 +71,9 @@ export async function POST(req: Request) {
         name: 'chat',
         externalId: `chat:${id}`,
         metadata: {
-          user: userId,
           userEmail
-        }
+        },
+        userId: `user:${userId}`
       })
       const lfGeneration = trace.generation({
         name: 'chat',
