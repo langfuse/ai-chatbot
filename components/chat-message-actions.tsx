@@ -3,6 +3,14 @@
 import { type Message } from 'ai'
 
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog'
 import { IconCheck, IconCopy } from '@/components/ui/icons'
 import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard'
 import { cn } from '@/lib/utils'
@@ -17,6 +25,7 @@ import { LangfuseWeb } from 'langfuse'
 import { useState } from 'react'
 import clsx from 'clsx'
 import { toast } from 'react-hot-toast'
+import { Textarea } from './ui/textarea'
 
 interface ChatMessageActionsProps extends React.ComponentProps<'div'> {
   message: Message
@@ -27,7 +36,7 @@ const langfuse = new LangfuseWeb({
   publicKey: process.env.NEXT_PUBLIC_LANGFUSE_PUBLIC_KEY ?? ''
 })
 
-type Vote = 'up' | 'down'
+type Feedback = 'positive' | 'negative'
 
 export function ChatMessageActions({
   message,
@@ -36,32 +45,45 @@ export function ChatMessageActions({
   ...props
 }: ChatMessageActionsProps) {
   const { isCopied, copyToClipboard } = useCopyToClipboard({ timeout: 2000 })
-  const [isVoting, setIsVoting] = useState(false)
-  const [vote, setVote] = useState<Vote | null>(null)
+  const [currentFeedback, setCurrentFeedback] = useState<
+    Feedback | 'submitting' | null
+  >(null)
+
+  const [modalState, setModalState] = useState<{
+    messageId: string
+    feedback: Feedback
+    comment: string
+  } | null>(null)
 
   const onCopy = () => {
     if (isCopied) return
     copyToClipboard(message.content)
   }
 
-  const handleFeedback = (vote: Vote) => {
-    if (isVoting || !chatId) return
-    setIsVoting(true)
+  const handleSubmit = () => {
+    if (currentFeedback === 'submitting' || !chatId || !modalState) return
+    const { comment, feedback, messageId } = modalState
+
+    setCurrentFeedback('submitting')
+
     langfuse
       .score({
         traceId: `chat:${chatId}`,
         traceIdType: 'EXTERNAL',
         name: 'user-feedback',
-        value: vote === 'up' ? 1 : -1
+        value: feedback === 'positive' ? 1 : -1,
+        comment: comment !== '' ? comment : undefined
       })
       .then(res => {
-        setIsVoting(false)
-        setVote(vote)
+        setCurrentFeedback(feedback)
       })
       .catch(err => {
         toast.error('Something went wrong')
-        setIsVoting(false)
+        setCurrentFeedback(null)
       })
+
+    // close modal
+    setModalState(null)
   }
 
   return (
@@ -78,14 +100,20 @@ export function ChatMessageActions({
           variant="ghost"
           size="iconXs"
           className={clsx(
-            vote === 'up'
+            currentFeedback === 'positive'
               ? 'md:opacity-100'
               : 'group-hover:opacity-100 md:opacity-0'
           )}
-          onClick={() => handleFeedback('up')}
-          disabled={isVoting}
+          onClick={() =>
+            setModalState({
+              messageId: message.id,
+              feedback: 'positive',
+              comment: ''
+            })
+          }
+          disabled={currentFeedback === 'submitting'}
         >
-          {vote === 'up' ? (
+          {currentFeedback === 'positive' ? (
             <FaThumbsUp className="h-3 w-3" />
           ) : (
             <FaRegThumbsUp className="h-3 w-3" />
@@ -107,14 +135,20 @@ export function ChatMessageActions({
           variant="ghost"
           size="iconXs"
           className={clsx(
-            vote === 'down'
+            currentFeedback === 'negative'
               ? 'md:opacity-100'
               : 'group-hover:opacity-100 md:opacity-0'
           )}
-          onClick={() => handleFeedback('down')}
-          disabled={isVoting}
+          onClick={() =>
+            setModalState({
+              messageId: message.id,
+              feedback: 'negative',
+              comment: ''
+            })
+          }
+          disabled={currentFeedback === 'submitting'}
         >
-          {vote === 'down' ? (
+          {currentFeedback === 'negative' ? (
             <FaThumbsDown className="h-3 w-3" />
           ) : (
             <FaRegThumbsDown className="h-3 w-3" />
@@ -122,6 +156,34 @@ export function ChatMessageActions({
           <span className="sr-only">Downvote</span>
         </Button>
       ) : null}
+      <Dialog open={!!modalState} onOpenChange={() => handleSubmit()}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Do you want to add a comment?</DialogTitle>
+            <DialogDescription>
+              <Textarea
+                className="mt-4 mb-2"
+                value={modalState?.comment ?? ''}
+                onChange={e => {
+                  setModalState({ ...modalState!, comment: e.target.value })
+                }}
+              />
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              type="submit"
+              onClick={() => handleSubmit()}
+              variant="secondary"
+            >
+              No, thank you
+            </Button>
+            <Button type="submit" onClick={() => handleSubmit()}>
+              Submit
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
