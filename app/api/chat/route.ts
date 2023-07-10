@@ -42,8 +42,12 @@ export async function POST(req: Request) {
   })
 
   const startTime = new Date()
+  let completionStartTime: Date | undefined = undefined
 
   const stream = OpenAIStream(res, {
+    async onStart() {
+      completionStartTime = new Date()
+    },
     async onCompletion(completion) {
       const title = json.messages[0].content.substring(0, 100)
       const id = json.id ?? nanoid()
@@ -74,6 +78,7 @@ export async function POST(req: Request) {
       const lfGeneration = trace.generation({
         name: 'chat',
         startTime,
+        completionStartTime,
         endTime: new Date(),
         prompt: messages,
         completion,

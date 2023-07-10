@@ -3067,8 +3067,8 @@ packages:
     engines: {node: '>=6'}
     dev: false
 
-  /langfuse@0.0.19:
-    resolution: {integrity: sha512-MwVKCzIZvui4V2Anq73WhapeJ/gktmGjCsugFsZIx7G1962bv2TLSnoHxWyWRNWBg6G7M1PickyYQFXk/WmlOQ==}
+  /langfuse@0.0.15:
+    resolution: {integrity: sha512-EA/7F+mUC0HhtejaV76KMEawQKZA3yLUoejxhzslhK8iGHpd/jZ9RFLXPyzpnSpNS7ZYntbo/WjaRui0e8MJdA==}
     dependencies:
       openapi-fetch: 0.6.1
     dev: false
