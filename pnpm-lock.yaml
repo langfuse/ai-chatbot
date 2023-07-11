@@ -42,8 +42,8 @@ dependencies:
     specifier: ^0.5.7
     version: 0.5.7
   ai:
-    specifier: ^2.1.6
-    version: 2.1.6(react@18.2.0)(svelte@3.59.2)(vue@3.3.4)
+    specifier: ^2.1.17
+    version: 2.1.17(react@18.2.0)(svelte@3.59.2)(vue@3.3.4)
   class-variance-authority:
     specifier: ^0.4.0
     version: 0.4.0(typescript@5.1.3)
@@ -1434,12 +1434,12 @@ packages:
     hasBin: true
     dev: true
 
-  /ai@2.1.6(react@18.2.0)(svelte@3.59.2)(vue@3.3.4):
-    resolution: {integrity: sha512-YFCy7KEUDvuNGNuD8Bz7BynXB/eW2jJRAxAIM8Hb5/gpppZJs6/nTSdpocROxoGESJchtkFgYdygieG/wciEEQ==}
+  /ai@2.1.17(react@18.2.0)(svelte@3.59.2)(vue@3.3.4):
+    resolution: {integrity: sha512-3dcg7cjDQdFeYbKREvJ18WhNrN+IVhASJPEolOiZINfmQ5qjqZHWNagqLsN8Wi2RYzD3CrskrN8KwAobUTgo9g==}
     engines: {node: '>=14.6'}
     peerDependencies:
-      react: ^18.0.0
-      svelte: ^3.29.0
+      react: ^18.2.0
+      svelte: ^3.0.0 || ^4.0.0
       vue: ^3.3.4
     peerDependenciesMeta:
       react:
