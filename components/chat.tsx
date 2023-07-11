@@ -16,10 +16,12 @@ import {
   DialogHeader,
   DialogTitle
 } from '@/components/ui/dialog'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 import { toast } from 'react-hot-toast'
+import { nanoid } from 'nanoid'
+import { CreateMessage } from 'ai'
 
 const IS_PREVIEW = process.env.VERCEL_ENV === 'preview'
 export interface ChatProps extends React.ComponentProps<'div'> {
@@ -32,22 +34,60 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
     'ai-token',
     null
   )
+
+  // Controlled message histor. Used to update the messages state onFinish to include the latest messageId provided by the server.
+  const controlledMessages = useRef<Message[]>(initialMessages ?? [])
+  const latestUserMessage = useRef<Message | CreateMessage | null>(null)
+  const latestMessageId = useRef<string | null>(null)
+
   const [previewTokenDialog, setPreviewTokenDialog] = useState(IS_PREVIEW)
   const [previewTokenInput, setPreviewTokenInput] = useState(previewToken ?? '')
-  const { messages, append, reload, stop, isLoading, input, setInput } =
-    useChat({
-      initialMessages,
+
+  const {
+    messages,
+    append,
+    reload,
+    stop,
+    isLoading,
+    input,
+    setInput,
+    setMessages
+  } = useChat({
+    initialMessages,
+    id,
+    body: {
       id,
-      body: {
-        id,
-        previewToken
-      },
-      onResponse(response) {
-        if (response.status === 401) {
-          toast.error(response.statusText)
-        }
+      previewToken
+    },
+    sendExtraMessageFields: true,
+    onFinish(message) {
+      // Update controlledMessages
+      if (latestUserMessage.current) {
+        controlledMessages.current.push({
+          ...latestUserMessage.current,
+          id: latestUserMessage.current.id ?? nanoid()
+        })
+        latestUserMessage.current = null
       }
-    })
+      controlledMessages.current.push({
+        ...message,
+        id: latestMessageId.current ?? message.id
+      })
+
+      // Update "ai" messages state
+      setMessages(controlledMessages.current)
+    },
+    onResponse(response) {
+      if (response.status === 401) {
+        toast.error(response.statusText)
+      }
+
+      // Get the latest message id from the server
+      const newMessageId = response.headers.get('X-Message-Id')
+      latestMessageId.current = newMessageId
+    }
+  })
+
   return (
     <>
       <div className={cn('pb-[200px] pt-4 md:pt-10', className)}>
@@ -64,7 +104,10 @@ export function Chat({ id, initialMessages, className }: ChatProps) {
         id={id}
         isLoading={isLoading}
         stop={stop}
-        append={append}
+        append={async message => {
+          latestUserMessage.current = message
+          return append(message)
+        }}
         reload={reload}
         messages={messages}
         input={input}

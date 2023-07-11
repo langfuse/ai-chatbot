@@ -1,10 +1,11 @@
 import { kv } from '@vercel/kv'
-import { OpenAIStream, StreamingTextResponse } from 'ai'
+import { Message, OpenAIStream, StreamingTextResponse } from 'ai'
 import { Configuration, OpenAIApi } from 'openai-edge'
 
 import { auth } from '@/auth'
 import { nanoid } from '@/lib/utils'
 import { Langfuse } from 'langfuse'
+import { type ChatCompletionRequestMessage } from 'openai-edge/types/types/chat'
 
 export const runtime = 'edge'
 
@@ -24,6 +25,14 @@ export async function POST(req: Request) {
   const { messages, previewToken } = json
   const { id: userId, email: userEmail } = (await auth())?.user
 
+  const chatId = json.id ?? nanoid()
+
+  // Exclude additional fields from being sent to OpenAI
+  const openAiMessages = (messages as Message[]).map(({ content, role }) => ({
+    content,
+    role: role
+  }))
+
   if (!userId) {
     return new Response('Unauthorized', {
       status: 401
@@ -34,27 +43,56 @@ export async function POST(req: Request) {
     configuration.apiKey = previewToken
   }
 
+  const trace = langfuse.trace({
+    name: 'chat',
+    externalId: `chat:${chatId}`,
+    metadata: {
+      userEmail
+    },
+    userId: `user:${userId}`
+  })
+
+  const lfGeneration = trace.generation({
+    name: 'chat',
+    prompt: openAiMessages as any, // TODO: fix SDK types
+    model: 'gpt-3.5-turbo',
+    modelParameters: {
+      temperature: 0.7
+    }
+  })
+
+  // Use the langfuse generation ID as the message ID
+  // Alternatively, trace.generation also accepts id as an argument if you want to use your own message id
+  const messageId = lfGeneration.id
+
   const res = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo',
-    messages,
+    messages: openAiMessages as ChatCompletionRequestMessage[], // Inconsistent type definitions of ai SDK, missing "function" role
     temperature: 0.7,
     stream: true
   })
 
-  const startTime = new Date()
-  let completionStartTime: Date | undefined = undefined
-
   const stream = OpenAIStream(res, {
     async onStart() {
-      completionStartTime = new Date()
+      lfGeneration.update({
+        completionStartTime: new Date()
+      })
     },
     async onCompletion(completion) {
+      lfGeneration.update({
+        endTime: new Date(),
+        completion,
+        usage: {
+          promptTokens: JSON.stringify(messages).length,
+          completionTokens: completion.length
+        }
+      })
+
       const title = json.messages[0].content.substring(0, 100)
-      const id = json.id ?? nanoid()
       const createdAt = Date.now()
-      const path = `/chat/${id}`
+      const path = `/chat/${chatId}`
       const payload = {
-        id,
+        id: chatId,
         title,
         userId,
         createdAt,
@@ -63,48 +101,25 @@ export async function POST(req: Request) {
           ...messages,
           {
             content: completion,
-            role: 'assistant'
+            role: 'assistant',
+            id: messageId
           }
         ]
       }
-      const trace = langfuse.trace({
-        name: 'chat',
-        externalId: `chat:${id}`,
-        metadata: {
-          userEmail
-        },
-        userId: `user:${userId}`
-      })
-      const lfGeneration = trace.generation({
-        name: 'chat',
-        startTime,
-        completionStartTime,
-        endTime: new Date(),
-        prompt: messages,
-        completion,
-        model: 'gpt-3.5-turbo',
-        modelParameters: {
-          temperature: 0.7
-        },
-        usage: {
-          promptTokens: JSON.stringify(messages).length,
-          completionTokens: completion.length
-        }
-      })
-      await kv.hmset(`chat:${id}`, payload)
+      await kv.hmset(`chat:${chatId}`, payload)
       lfGeneration.event({
         startTime: new Date(),
         name: 'kv-hmset',
         level: 'DEBUG',
         input: {
-          key: `chat:${id}`,
+          key: `chat:${chatId}`,
           ...payload
         }
       })
 
       await kv.zadd(`user:chat:${userId}`, {
         score: createdAt,
-        member: `chat:${id}`
+        member: `chat:${chatId}`
       })
       lfGeneration.event({
         startTime: new Date(),
@@ -113,7 +128,7 @@ export async function POST(req: Request) {
         input: {
           key: `user:chat:${userId}`,
           score: createdAt,
-          member: `chat:${id}`
+          member: `chat:${chatId}`
         }
       })
 
@@ -125,5 +140,9 @@ export async function POST(req: Request) {
     }
   })
 
-  return new StreamingTextResponse(stream)
+  return new StreamingTextResponse(stream, {
+    headers: {
+      'X-Message-Id': messageId
+    }
+  })
 }

@@ -42,8 +42,8 @@ dependencies:
     specifier: ^0.5.7
     version: 0.5.7
   ai:
-    specifier: ^2.1.6
-    version: 2.1.6(react@18.2.0)(svelte@3.59.2)(vue@3.3.4)
+    specifier: ^2.1.17
+    version: 2.1.17(react@18.2.0)(svelte@3.59.2)(vue@3.3.4)
   class-variance-authority:
     specifier: ^0.4.0
     version: 0.4.0(typescript@5.1.3)
@@ -54,8 +54,8 @@ dependencies:
     specifier: ^10.1.1
     version: 10.1.1(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0)
   langfuse:
-    specifier: ^0.0.21
-    version: 0.0.21
+    specifier: ^0.0.24
+    version: 0.0.24
   lucide-react:
     specifier: ^0.258.0
     version: 0.258.0(react@18.2.0)
@@ -1434,12 +1434,12 @@ packages:
     hasBin: true
     dev: true
 
-  /ai@2.1.6(react@18.2.0)(svelte@3.59.2)(vue@3.3.4):
-    resolution: {integrity: sha512-YFCy7KEUDvuNGNuD8Bz7BynXB/eW2jJRAxAIM8Hb5/gpppZJs6/nTSdpocROxoGESJchtkFgYdygieG/wciEEQ==}
+  /ai@2.1.17(react@18.2.0)(svelte@3.59.2)(vue@3.3.4):
+    resolution: {integrity: sha512-3dcg7cjDQdFeYbKREvJ18WhNrN+IVhASJPEolOiZINfmQ5qjqZHWNagqLsN8Wi2RYzD3CrskrN8KwAobUTgo9g==}
     engines: {node: '>=14.6'}
     peerDependencies:
-      react: ^18.0.0
-      svelte: ^3.29.0
+      react: ^18.2.0
+      svelte: ^3.0.0 || ^4.0.0
       vue: ^3.3.4
     peerDependenciesMeta:
       react:
@@ -3067,10 +3067,11 @@ packages:
     engines: {node: '>=6'}
     dev: false
 
-  /langfuse@0.0.21:
-    resolution: {integrity: sha512-DqhU00zwvQhdkgc2GNgOuwm60bVbkH4Cnlw+2+qtZMWc8H2hwB5qrlCy801Aks3BqRchKlpE/ohVQBYyMtLMYQ==}
+  /langfuse@0.0.24:
+    resolution: {integrity: sha512-cSJztqkshVHl57RF0enMlzu/zl7ugBbnwqo3nPtK+ZrBEv1kjYKBoXsdrVdLHuWWJfb2SnY+6Tz2ixvxU+Lyuw==}
     dependencies:
       openapi-fetch: 0.6.1
+      uuid: 9.0.0
     dev: false
 
   /language-subtag-registry@0.3.22:
@@ -4996,6 +4997,11 @@ packages:
   /util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
     dev: true
+
+  /uuid@9.0.0:
+    resolution: {integrity: sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==}
+    hasBin: true
+    dev: false
 
   /uvu@0.5.6:
     resolution: {integrity: sha512-+g8ENReyr8YsOc6fv/NVJs2vFdHBnBNdfE49rshrTzDWOlUx4Gq7KOS2GD8eqhy2j+Ejq29+SbKH8yjkAqXqoA==}
