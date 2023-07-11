@@ -29,6 +29,7 @@ import { Textarea } from './ui/textarea'
 
 interface ChatMessageActionsProps extends React.ComponentProps<'div'> {
   message: Message
+  messageIndexedId: string
   chatId?: string
 }
 
@@ -40,6 +41,7 @@ type Feedback = 'positive' | 'negative'
 
 export function ChatMessageActions({
   message,
+  messageIndexedId,
   chatId,
   className,
   ...props
@@ -50,7 +52,6 @@ export function ChatMessageActions({
   >(null)
 
   const [modalState, setModalState] = useState<{
-    messageId: string
     feedback: Feedback
     comment: string
   } | null>(null)
@@ -62,7 +63,7 @@ export function ChatMessageActions({
 
   const handleSubmit = () => {
     if (currentFeedback === 'submitting' || !chatId || !modalState) return
-    const { comment, feedback, messageId } = modalState
+    const { comment, feedback } = modalState
 
     setCurrentFeedback('submitting')
 
@@ -72,7 +73,8 @@ export function ChatMessageActions({
         traceIdType: 'EXTERNAL',
         name: 'user-feedback',
         value: feedback === 'positive' ? 1 : -1,
-        comment: comment !== '' ? comment : undefined
+        comment: messageIndexedId
+        // comment: comment !== '' ? comment : undefined
       })
       .then(res => {
         setCurrentFeedback(feedback)
@@ -106,7 +108,6 @@ export function ChatMessageActions({
           )}
           onClick={() =>
             setModalState({
-              messageId: message.id,
               feedback: 'positive',
               comment: ''
             })
@@ -141,7 +142,6 @@ export function ChatMessageActions({
           )}
           onClick={() =>
             setModalState({
-              messageId: message.id,
               feedback: 'negative',
               comment: ''
             })

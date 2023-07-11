@@ -86,6 +86,9 @@ export async function POST(req: Request) {
         modelParameters: {
           temperature: 0.7
         },
+        // metadata: {
+        //   index: messages.length
+        // },
         usage: {
           promptTokens: JSON.stringify(messages).length,
           completionTokens: completion.length
@@ -125,5 +128,7 @@ export async function POST(req: Request) {
     }
   })
 
-  return new StreamingTextResponse(stream)
+  return new StreamingTextResponse(stream, {
+    // headers: { 'X-MESSAGE-ID': messageId }
+  })
 }
