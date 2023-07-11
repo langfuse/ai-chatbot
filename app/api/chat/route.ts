@@ -5,6 +5,7 @@ import { Configuration, OpenAIApi } from 'openai-edge'
 import { auth } from '@/auth'
 import { nanoid } from '@/lib/utils'
 import { Langfuse } from 'langfuse'
+import { type ChatCompletionRequestMessage } from 'openai-edge/types/types/chat'
 
 export const runtime = 'edge'
 
@@ -29,7 +30,7 @@ export async function POST(req: Request) {
   // Exclude additional fields from being sent to OpenAI
   const openAiMessages = (messages as Message[]).map(({ content, role }) => ({
     content,
-    role
+    role: role
   }))
 
   if (!userId) {
@@ -66,7 +67,7 @@ export async function POST(req: Request) {
 
   const res = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo',
-    messages: openAiMessages,
+    messages: openAiMessages as ChatCompletionRequestMessage[], // Inconsistent type definitions of ai SDK, missing "function" role
     temperature: 0.7,
     stream: true
   })
