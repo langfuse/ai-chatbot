@@ -24,6 +24,8 @@ export async function POST(req: Request) {
   const { messages, previewToken } = json
   const { id: userId, email: userEmail } = (await auth())?.user
 
+  const chatId = json.id ?? nanoid()
+
   if (!userId) {
     return new Response('Unauthorized', {
       status: 401
@@ -50,11 +52,10 @@ export async function POST(req: Request) {
     },
     async onCompletion(completion) {
       const title = json.messages[0].content.substring(0, 100)
-      const id = json.id ?? nanoid()
       const createdAt = Date.now()
-      const path = `/chat/${id}`
+      const path = `/chat/${chatId}`
       const payload = {
-        id,
+        id: chatId,
         title,
         userId,
         createdAt,
@@ -69,7 +70,7 @@ export async function POST(req: Request) {
       }
       const trace = langfuse.trace({
         name: 'chat',
-        externalId: `chat:${id}`,
+        externalId: `chat:${chatId}`,
         metadata: {
           userEmail
         },
@@ -91,20 +92,20 @@ export async function POST(req: Request) {
           completionTokens: completion.length
         }
       })
-      await kv.hmset(`chat:${id}`, payload)
+      await kv.hmset(`chat:${chatId}`, payload)
       lfGeneration.event({
         startTime: new Date(),
         name: 'kv-hmset',
         level: 'DEBUG',
         input: {
-          key: `chat:${id}`,
+          key: `chat:${chatId}`,
           ...payload
         }
       })
 
       await kv.zadd(`user:chat:${userId}`, {
         score: createdAt,
-        member: `chat:${id}`
+        member: `chat:${chatId}`
       })
       lfGeneration.event({
         startTime: new Date(),
@@ -113,7 +114,7 @@ export async function POST(req: Request) {
         input: {
           key: `user:chat:${userId}`,
           score: createdAt,
-          member: `chat:${id}`
+          member: `chat:${chatId}`
         }
       })
 
