@@ -54,8 +54,8 @@ dependencies:
     specifier: ^10.1.1
     version: 10.1.1(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0)
   langfuse:
-    specifier: ^0.0.21
-    version: 0.0.21
+    specifier: ^0.0.22
+    version: 0.0.22
   lucide-react:
     specifier: ^0.258.0
     version: 0.258.0(react@18.2.0)
@@ -3067,10 +3067,11 @@ packages:
     engines: {node: '>=6'}
     dev: false
 
-  /langfuse@0.0.21:
-    resolution: {integrity: sha512-DqhU00zwvQhdkgc2GNgOuwm60bVbkH4Cnlw+2+qtZMWc8H2hwB5qrlCy801Aks3BqRchKlpE/ohVQBYyMtLMYQ==}
+  /langfuse@0.0.22:
+    resolution: {integrity: sha512-IHtlCz/KsQkq5pUYXSBQMkv4PtXOuyLlzT/aNQnYMIisgl4wS07tEki9L5TVAtPiepqVpyUK9EUqkekc/l/98A==}
     dependencies:
       openapi-fetch: 0.6.1
+      uuid: 9.0.0
     dev: false
 
   /language-subtag-registry@0.3.22:
@@ -4996,6 +4997,11 @@ packages:
   /util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
     dev: true
+
+  /uuid@9.0.0:
+    resolution: {integrity: sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==}
+    hasBin: true
+    dev: false
 
   /uvu@0.5.6:
     resolution: {integrity: sha512-+g8ENReyr8YsOc6fv/NVJs2vFdHBnBNdfE49rshrTzDWOlUx4Gq7KOS2GD8eqhy2j+Ejq29+SbKH8yjkAqXqoA==}
