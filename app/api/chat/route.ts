@@ -1,5 +1,5 @@
 import { kv } from '@vercel/kv'
-import { OpenAIStream, StreamingTextResponse } from 'ai'
+import { Message, OpenAIStream, StreamingTextResponse } from 'ai'
 import { Configuration, OpenAIApi } from 'openai-edge'
 
 import { auth } from '@/auth'
@@ -26,6 +26,12 @@ export async function POST(req: Request) {
 
   const chatId = json.id ?? nanoid()
 
+  // Exclude additional fields from being sent to OpenAI
+  const openAiMessages = (messages as Message[]).map(({ content, role }) => ({
+    content,
+    role
+  }))
+
   if (!userId) {
     return new Response('Unauthorized', {
       status: 401
@@ -47,16 +53,20 @@ export async function POST(req: Request) {
 
   const lfGeneration = trace.generation({
     name: 'chat',
-    prompt: messages,
+    prompt: openAiMessages as any, // TODO: fix SDK types
     model: 'gpt-3.5-turbo',
     modelParameters: {
       temperature: 0.7
     }
   })
 
+  // Use the langfuse generation ID as the message ID
+  // Alternatively, trace.generation also accepts id as an argument if you want to use your own message id
+  const messageId = lfGeneration.id
+
   const res = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo',
-    messages,
+    messages: openAiMessages,
     temperature: 0.7,
     stream: true
   })
@@ -90,7 +100,8 @@ export async function POST(req: Request) {
           ...messages,
           {
             content: completion,
-            role: 'assistant'
+            role: 'assistant',
+            id: messageId
           }
         ]
       }
@@ -130,7 +141,7 @@ export async function POST(req: Request) {
 
   return new StreamingTextResponse(stream, {
     headers: {
-      'X-langfuse-generation-id': lfGeneration.id
+      'X-Message-Id': messageId
     }
   })
 }

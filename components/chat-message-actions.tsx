@@ -49,8 +49,12 @@ export function ChatMessageActions({
     Feedback | 'submitting' | null
   >(null)
 
+  const showFeedbackButtons =
+    message.role === 'assistant' &&
+    chatId !== null && // need thread id to submit feedback
+    message.id.length === 36 // only show feedback buttons for messages with uuids as ids (updated after streaming is finished)
+
   const [modalState, setModalState] = useState<{
-    messageId: string
     feedback: Feedback
     comment: string
   } | null>(null)
@@ -62,7 +66,6 @@ export function ChatMessageActions({
 
   const handleSubmit = () => {
     if (currentFeedback === 'submitting' || !chatId || !modalState) return
-    const { comment, feedback, messageId } = modalState
 
     setCurrentFeedback('submitting')
 
@@ -71,11 +74,12 @@ export function ChatMessageActions({
         traceId: `chat:${chatId}`,
         traceIdType: 'EXTERNAL',
         name: 'user-feedback',
-        value: feedback === 'positive' ? 1 : -1,
-        comment: comment !== '' ? comment : undefined
+        value: modalState.feedback === 'positive' ? 1 : -1,
+        comment: modalState.comment !== '' ? modalState.comment : undefined,
+        observationId: message.id
       })
       .then(res => {
-        setCurrentFeedback(feedback)
+        setCurrentFeedback(modalState.feedback)
       })
       .catch(err => {
         toast.error('Something went wrong')
@@ -89,13 +93,13 @@ export function ChatMessageActions({
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-end transition-opacity md:absolute md:-right-10',
+        'flex md:flex-col items-center justify-center md:justify-end transition-opacity md:absolute md:-right-10',
         message.role === 'assistant' ? 'md:top-[-36px]' : 'md:-top-2',
         className
       )}
       {...props}
     >
-      {message.role === 'assistant' && chatId ? (
+      {showFeedbackButtons ? (
         <Button
           variant="ghost"
           size="iconXs"
@@ -106,7 +110,6 @@ export function ChatMessageActions({
           )}
           onClick={() =>
             setModalState({
-              messageId: message.id,
               feedback: 'positive',
               comment: ''
             })
@@ -130,7 +133,7 @@ export function ChatMessageActions({
         {isCopied ? <IconCheck /> : <IconCopy />}
         <span className="sr-only">Copy message</span>
       </Button>
-      {message.role === 'assistant' && chatId ? (
+      {showFeedbackButtons ? (
         <Button
           variant="ghost"
           size="iconXs"
@@ -141,7 +144,6 @@ export function ChatMessageActions({
           )}
           onClick={() =>
             setModalState({
-              messageId: message.id,
               feedback: 'negative',
               comment: ''
             })
