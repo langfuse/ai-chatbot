@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -54,8 +54,8 @@ dependencies:
     specifier: ^10.1.1
     version: 10.1.1(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0)
   langfuse:
-    specifier: ^0.0.25
-    version: 0.0.25
+    specifier: ^0.0.26
+    version: 0.0.26
   lucide-react:
     specifier: ^0.258.0
     version: 0.258.0(react@18.2.0)
@@ -3067,8 +3067,8 @@ packages:
     engines: {node: '>=6'}
     dev: false
 
-  /langfuse@0.0.25:
-    resolution: {integrity: sha512-5CS1m0W2b5WwD2p5zkm9Q21x2+c9pX7qtiIhBaD/ooNCUl2FxwbeXCX80Q9DdP8WhRiKmsgk/S1TIWbjVy7Q7Q==}
+  /langfuse@0.0.26:
+    resolution: {integrity: sha512-eTLndaF5vBrkmM6fkWpr6wBuKxfHHNhGOnVevwt6xZ6Unq/WiQRMozv1MV8/lYOLqJvAC7V3RbawElzD59pRKQ==}
     dependencies:
       openapi-fetch: 0.6.1
       uuid: 9.0.0
