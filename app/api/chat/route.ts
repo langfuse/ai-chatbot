@@ -81,11 +81,7 @@ export async function POST(req: Request) {
     async onCompletion(completion) {
       lfGeneration.update({
         endTime: new Date(),
-        completion,
-        usage: {
-          promptTokens: JSON.stringify(messages).length,
-          completionTokens: completion.length
-        }
+        completion
       })
 
       const title = json.messages[0].content.substring(0, 100)
