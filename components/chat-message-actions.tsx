@@ -33,7 +33,8 @@ interface ChatMessageActionsProps extends React.ComponentProps<'div'> {
 }
 
 const langfuse = new LangfuseWeb({
-  publicKey: process.env.NEXT_PUBLIC_LANGFUSE_PUBLIC_KEY ?? ''
+  publicKey: process.env.NEXT_PUBLIC_LANGFUSE_PUBLIC_KEY ?? '',
+  baseUrl: process.env.NEXT_PUBLIC_LANGFUSE_BASE_URL
 })
 
 type Feedback = 'positive' | 'negative'
@@ -71,8 +72,7 @@ export function ChatMessageActions({
 
     langfuse
       .score({
-        traceId: `chat:${chatId}`,
-        traceIdType: 'EXTERNAL',
+        traceId: `lf-ai-chat:${chatId}`,
         name: 'user-feedback',
         value: modalState.feedback === 'positive' ? 1 : -1,
         comment: modalState.comment !== '' ? modalState.comment : undefined,

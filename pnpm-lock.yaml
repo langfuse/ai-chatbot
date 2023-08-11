@@ -54,8 +54,8 @@ dependencies:
     specifier: ^10.1.1
     version: 10.1.1(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0)
   langfuse:
-    specifier: ^0.0.26
-    version: 0.0.26
+    specifier: 0.1.0-beta.7
+    version: 0.1.0-beta.7
   lucide-react:
     specifier: ^0.258.0
     version: 0.258.0(react@18.2.0)
@@ -165,8 +165,8 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /@auth/core@0.0.0-manual.8fcd46b0:
-    resolution: {integrity: sha512-KuhvZ0hHz6NvMAgAi+su0dJOD0YAiOWGaLswyfGK5RsG/cdhqyyiII9HOTaZbWZAKir0UGYb8SlN+owhV30JXg==}
+  /@auth/core@0.0.0-manual.59d8da33:
+    resolution: {integrity: sha512-ZTaUedTobGEvQPhEeJLmnsdGbztG10T0rK8TA4wH87Eb8oBHInI//3zRngX6T9hEcZ+/OJnIANw0JrGDqUDREA==}
     peerDependencies:
       nodemailer: ^6.8.0
     peerDependenciesMeta:
@@ -3067,11 +3067,8 @@ packages:
     engines: {node: '>=6'}
     dev: false
 
-  /langfuse@0.0.26:
-    resolution: {integrity: sha512-eTLndaF5vBrkmM6fkWpr6wBuKxfHHNhGOnVevwt6xZ6Unq/WiQRMozv1MV8/lYOLqJvAC7V3RbawElzD59pRKQ==}
-    dependencies:
-      openapi-fetch: 0.6.1
-      uuid: 9.0.0
+  /langfuse@0.1.0-beta.7:
+    resolution: {integrity: sha512-jclRiq3KgCzS1bkaf+X7SEz60rPRv8NYX+2li0R1kchG4R93+qX9X8B4wSHNbUJDQXVHJ1AsEa5fgB+h4SpFUw==}
     dev: false
 
   /language-subtag-registry@0.3.22:
@@ -3650,7 +3647,7 @@ packages:
       nodemailer:
         optional: true
     dependencies:
-      '@auth/core': 0.0.0-manual.8fcd46b0
+      '@auth/core': 0.0.0-manual.59d8da33
       next: 13.4.7-canary.1(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
     dev: false
@@ -3849,10 +3846,6 @@ packages:
   /openai-edge@0.5.1:
     resolution: {integrity: sha512-/Q/b9wkPKWIzcnsp2o0Of5QW/t4A0XLw+E7rjVSYR3gLVt+pWpFuWCgWPWUVS1UrrLJPvzmndwe1JMpfqLRJIQ==}
     engines: {node: '>=12'}
-    dev: false
-
-  /openapi-fetch@0.6.1:
-    resolution: {integrity: sha512-CGWPqqtL31uC2e4eEU9NHoqYMXnJ7Jk4H/4Yguil4tO22MIZi91hlQJ/51E8CiaKdSTODh03yF4ndjIOABVHUw==}
     dev: false
 
   /optionator@0.9.3:
@@ -4997,11 +4990,6 @@ packages:
   /util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
     dev: true
-
-  /uuid@9.0.0:
-    resolution: {integrity: sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==}
-    hasBin: true
-    dev: false
 
   /uvu@0.5.6:
     resolution: {integrity: sha512-+g8ENReyr8YsOc6fv/NVJs2vFdHBnBNdfE49rshrTzDWOlUx4Gq7KOS2GD8eqhy2j+Ejq29+SbKH8yjkAqXqoA==}

@@ -17,7 +17,8 @@ const openai = new OpenAIApi(configuration)
 
 const langfuse = new Langfuse({
   secretKey: process.env.LANGFUSE_SECRET_KEY ?? '',
-  publicKey: process.env.NEXT_PUBLIC_LANGFUSE_PUBLIC_KEY ?? ''
+  publicKey: process.env.NEXT_PUBLIC_LANGFUSE_PUBLIC_KEY ?? '',
+  baseUrl: process.env.NEXT_PUBLIC_LANGFUSE_BASE_URL
 })
 
 export async function POST(req: Request) {
@@ -45,7 +46,7 @@ export async function POST(req: Request) {
 
   const trace = langfuse.trace({
     name: 'chat',
-    externalId: `chat:${chatId}`,
+    id: `lf-ai-chat:${chatId}`,
     metadata: {
       userEmail
     },
