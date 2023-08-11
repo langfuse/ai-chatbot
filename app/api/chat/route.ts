@@ -130,7 +130,7 @@ export async function POST(req: Request) {
       })
 
       try {
-        await langfuse.flush()
+        await langfuse.shutdownAsync()
       } catch (e) {
         console.error(JSON.stringify(e))
       }
